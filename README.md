@@ -10,7 +10,7 @@
 $ cleos push action eosio.saving setdistrib '[["eosio.grants", 10000]]' -p eosio.saving
 
 # Transfer to distribute
-$ cleos push action eosio.token transfer '["myaccount", "eosio.saving", "1.0000 EOS", "deposit"]' -p myaccount
+$ cleos transfer eosio eosio.saving "1.0000 EOS" "unallocated inflation"
 ```
 
 ## Edge cases
