@@ -7,7 +7,6 @@
 #include <string>
 
 using namespace eosio;
-using namespace std;
 
 namespace eosio {
 
@@ -40,7 +39,7 @@ namespace eosio {
          * ```
          */
         struct [[eosio::table("config")]] config_row {
-            std::vector<distribute_account>     accounts
+            std::vector<distribute_account>     accounts;
         };
         typedef eosio::singleton< "config"_n, config_row > config_table;
 
@@ -80,9 +79,6 @@ namespace eosio {
          * */
         [[eosio::action]]
         void setdistrib( const std::vector<distribute_account>& accounts );
-
-        // [[eosio::action]]
-        // void init( const symbol& sym );
 
         /**
          * Claim tokens that have been marked for distribution.
