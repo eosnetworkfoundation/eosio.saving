@@ -4,7 +4,6 @@
 #include <eosio/asset.hpp>
 #include <eosio/singleton.hpp>
 
-#include <optional>
 #include <string>
 
 using namespace eosio;
@@ -12,8 +11,9 @@ using namespace std;
 
 namespace eosio {
 
-    static constexpr int64_t MAX_DISTRIBUTE_PERCENT = 100 * eosiosystem::inflation_precision; // 100%
-    static constexpr int64_t SYSTEM_CORE_SYMBOL = symbol{"EOS", 4};eosiosystem::system_contract::get_core_symbol()
+    static constexpr int64_t MAX_DISTRIBUTE_PERCENT = 100'00; // 100%
+    static constexpr symbol TOKEN_SYMBOL = symbol{"EOS", 4};
+    static constexpr name TOKEN_CONTRACT = "eosio.token"_n;
 
     struct distribute_account {
         name        account;
@@ -28,7 +28,6 @@ namespace eosio {
          * ## TABLE `config`
          *
          * - `{distribute_account} accounts` - configuration accounts (ex: [ {"account": "eosio.grants", "percent": 10000} ])
-         * - `{extended_symbol} sym` - extended symbol (ex: {"contract": "eosio.token", "symbol": "4,EOS"})
          *
          * ### example
          *
@@ -37,13 +36,11 @@ namespace eosio {
          *   "accounts": [
          *     {"account": "eosio.grants", "percent": 10000}
          *   ]
-         *   "sym": {"contract": "eosio.token", "symbol": "4,EOS"}
          * }
          * ```
          */
         struct [[eosio::table("config")]] config_row {
             std::vector<distribute_account>     accounts
-            extended_symbol                     sym;
         };
         typedef eosio::singleton< "config"_n, config_row > config_table;
 
@@ -84,8 +81,8 @@ namespace eosio {
         [[eosio::action]]
         void setdistrib( const std::vector<distribute_account>& accounts );
 
-        [[eosio::action]]
-        void init( const extended_symbol sym );
+        // [[eosio::action]]
+        // void init( const symbol& sym );
 
         /**
          * Claim tokens that have been marked for distribution.
@@ -95,13 +92,13 @@ namespace eosio {
          * @post row in `claimers` table will be erased
          * */
         [[eosio::action]]
-        void claim(const name& claimer);
+        void claim( const name& claimer );
 
         /**
-         * Action that will be called when eosio.token::transfer is performed.
+         * Action that will be called when transfer is performed.
          **/
-        [[eosio::on_notify("eosio.token::transfer")]]
-        void on_transfer(name from, name to, asset quantity, eosio::ignore<std::string> memo);
+        [[eosio::on_notify("*::transfer")]]
+        void on_transfer( const name& from, const name& to, const asset& quantity, const string& memo );
 
     }; // saving
 } // eosio

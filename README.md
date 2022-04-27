@@ -16,3 +16,8 @@ $ cleos push action eosio.saving setdistrib '[["eosio.grants", 10000]]' -p eosio
 # Transfer to distribute
 $ cleos push action eosio.token transfer '["myaccount", "eosio.saving", "1.0000 EOS", "deposit"]' -p myaccount
 ```
+
+## To-do's
+
+- Handle allocating to self `eosio.saving`
+- Handle when not initialized state
