@@ -7,7 +7,7 @@
 
 ```bash
 # Setup distribution configurations
-$ cleos push action eosio.saving setdistrib '[["eosio.grants", 10000]]' -p eosio.saving
+$ cleos push action eosio.saving setdistrib '[["eosio.grants", 8000], ["eosio.saving", 2000]]' -p eosio.saving
 
 # Transfer to distribute
 $ cleos transfer eosio eosio.saving "1.0000 EOS" "unallocated inflation"
