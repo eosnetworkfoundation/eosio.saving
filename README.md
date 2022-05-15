@@ -11,6 +11,10 @@ $ cleos push action eosio.saving setdistrib '[["eosio.grants", 8000], ["eosio.sa
 
 # Transfer to distribute
 $ cleos transfer eosio eosio.saving "1.0000 EOS" "unallocated inflation"
+
+# Claim allocation
+$ cleos push action eosio.saving claim '["eosio.grants"]' -p eosio.grants
+# //=> transfer 0.8000 EOS from `eosio.saving` to `eosio.grants`
 ```
 
 ## Edge cases
