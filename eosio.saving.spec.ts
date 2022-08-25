@@ -61,9 +61,15 @@ beforeAll(async () => {
 
 describe('eosio.saving', () => {
   it("config::setdistrib", async () => {
-    await contracts.saving.actions.setdistrib([[{account: "eosio.grants", percent: 8000}, {account: "eosio.saving", percent: 2000}]]).send();
+    const accounts = [{account: "eosio.grants", percent: 8000}, {account: "eosio.saving", percent: 2000}];
+    await contracts.saving.actions.setdistrib([accounts]).send();
     const config = getConfig();
-    // expect(config.accounts).toBe([["eosio.grants", 8000], ["eosio.saving", 2000]]);
+    expect(config.accounts).toStrictEqual(accounts);
+  });
+
+  it("config::transfer", async () => {
+    await contracts.token.EOS.actions.transfer(["eosio", "eosio.saving", "100.0000 EOS", "unallocated inflation"]).send("eosio@active");
+    expect(getClaimer("eosio.grants").balance).toBe("80.0000 EOS");
   });
 });
 
