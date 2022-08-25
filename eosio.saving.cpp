@@ -49,7 +49,7 @@ void saving::on_transfer( const name& from, const name& to, const asset& quantit
     // validate incoming transfer asset
     check( get_first_receiver() == TOKEN_CONTRACT, "Invalid contract");
     check( quantity.symbol == TOKEN_SYMBOL, "Invalid symbol");
-    check( quantity.amount >= 0, "Quantity must be positive");
+    check( quantity.amount > 0, "Quantity must be positive");
 
     // ignore no-initialized contracts
     if ( !_config.exists() ) return;

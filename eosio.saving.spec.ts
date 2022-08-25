@@ -104,6 +104,12 @@ describe('eosio.saving', () => {
     expect(getBalance("eosio.saving", "EOS")).toBe(200000); // 20.0000 EOS
   });
 
+  it("small transfer", async () => {
+    await contracts.token.EOS.actions.transfer(["eosio", "eosio.saving", "0.0010 EOS", "unallocated inflation"]).send("eosio@active");
+    expect(getClaimer("eosio.grants").balance).toBe("0.0008 EOS");
+  });
+
+  // ERRORS
   it("error::setdistrib (50)", async () => {
     const accounts = [{account: "eosio.grants", percent: 5000}];
     const action = contracts.saving.actions.setdistrib([accounts]).send();
@@ -126,7 +132,6 @@ describe('eosio.saving', () => {
     const action = contracts.fake.EOS.actions.transfer(["eosio", "eosio.saving", "100.0000 EOS", "fake unallocated inflation"]).send("eosio@active");
     await expectToThrow(action, "Invalid contract");
   });
-
 });
 
 /**
