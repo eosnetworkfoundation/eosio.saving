@@ -10,6 +10,9 @@ const contracts = {
   token: {
     EOS: blockchain.createContract('eosio.token', 'external/eosio.token/eosio.token'),
   },
+  fake: {
+    EOS: blockchain.createContract('fake.token', 'external/eosio.token/eosio.token'),
+  },
 }
 
 // accounts
@@ -39,7 +42,7 @@ const getBalance = ( account: string, symcode = "EOS" ): number => {
   const scope = Name.from(account).value.value;
   const primaryKey = Asset.SymbolCode.from(symcode).value.value;
   const result = contract.tables.accounts(scope).getTableRow(primaryKey);
-  if ( result?.balance ) return Asset.from( result.balance ).value;
+  if ( result?.balance ) return Asset.from( result.balance ).units.toNumber();
   return 0;
 }
 
@@ -56,21 +59,74 @@ beforeAll(async () => {
   // create EOS token
   await contracts.token.EOS.actions.create(["eosio", "10000000000.0000 EOS"]).send();
   await contracts.token.EOS.actions.issue(["eosio", "10000000000.0000 EOS", "init"]).send("eosio@active");
-  await contracts.token.EOS.actions.transfer(["eosio", "eosio.saving", "100000.0000 EOS", "init"]).send("eosio@active");
+
+  // create fake EOS token
+  await contracts.fake.EOS.actions.create(["eosio", "10000000000.0000 EOS"]).send();
+  await contracts.fake.EOS.actions.issue(["eosio", "10000000000.0000 EOS", "init"]).send("eosio@active");
 });
 
 describe('eosio.saving', () => {
-  it("config::setdistrib", async () => {
-    const accounts = [{account: "eosio.grants", percent: 8000}, {account: "eosio.saving", percent: 2000}];
+  it("transfer pre-config", async () => {
+    await contracts.token.EOS.actions.transfer(["eosio", "eosio.saving", "100000.0000 EOS", "init"]).send("eosio@active");
+    await contracts.token.EOS.actions.transfer(["eosio.saving", "eosio", "100000.0000 EOS", "init"]).send("eosio.saving@active");
+  });
+
+  it("config::setdistrib (100%)", async () => {
+    const accounts = [{account: "eosio.grants", percent: 10000}];
     await contracts.saving.actions.setdistrib([accounts]).send();
     const config = getConfig();
     expect(config.accounts).toStrictEqual(accounts);
   });
 
-  it("config::transfer", async () => {
+  it("allocate", async () => {
+    await contracts.token.EOS.actions.transfer(["eosio", "eosio.saving", "100.0000 EOS", "unallocated inflation"]).send("eosio@active");
+    expect(getClaimer("eosio.grants").balance).toBe("100.0000 EOS");
+  });
+
+  it("claim", async () => {
+    await contracts.saving.actions.claim(["eosio.grants"]).send("eosio.grants@active");
+    expect(getBalance("eosio.grants", "EOS")).toBe(1000000);
+  });
+
+  it("setdistrib (80/20)", async () => {
+    const accounts = [{account: "eosio.grants", percent: 8000}, {account: "eosio.saving", percent: 2000}];
+    await contracts.saving.actions.setdistrib([accounts]).send();
+    const config = getConfig();
+    expect(config.accounts).toStrictEqual(accounts);
+
+    // transfer
     await contracts.token.EOS.actions.transfer(["eosio", "eosio.saving", "100.0000 EOS", "unallocated inflation"]).send("eosio@active");
     expect(getClaimer("eosio.grants").balance).toBe("80.0000 EOS");
+
+    // claim
+    await contracts.saving.actions.claim(["eosio.grants"]).send("eosio.grants@active");
+    expect(getBalance("eosio.grants", "EOS")).toBe(1800000); // 100.0000 EOS + 80.0000 EOS
+    expect(getBalance("eosio.saving", "EOS")).toBe(200000); // 20.0000 EOS
   });
+
+  it("error::setdistrib (50)", async () => {
+    const accounts = [{account: "eosio.grants", percent: 5000}];
+    const action = contracts.saving.actions.setdistrib([accounts]).send();
+    await expectToThrow(action, "Total percentage does not equal 100%");
+  });
+
+  it("error::setdistrib (25/25/25)", async () => {
+    const accounts =["eosio", "eosio.grants", "eosio.saving"].map(account => { return {account, percent: 2500}});
+    const action = contracts.saving.actions.setdistrib([accounts]).send();
+    await expectToThrow(action, "Total percentage does not equal 100%");
+  });
+
+  it("error::setdistrib (50/100)", async () => {
+    const accounts = [{account: "eosio.grants", percent: 5000}, {account: "eosio.saving", percent: 10000}];
+    const action = contracts.saving.actions.setdistrib([accounts]).send();
+    await expectToThrow(action, "Total percentage exceeds 100%");
+  });
+
+  it("fake transfer", async () => {
+    const action = contracts.fake.EOS.actions.transfer(["eosio", "eosio.saving", "100.0000 EOS", "fake unallocated inflation"]).send("eosio@active");
+    await expectToThrow(action, "Invalid contract");
+  });
+
 });
 
 /**
