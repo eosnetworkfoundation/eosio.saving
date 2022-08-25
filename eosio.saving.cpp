@@ -72,6 +72,9 @@ void saving::on_transfer( const name& from, const name& to, const asset& quantit
         // do not update claimer balance if self (eosio.saving)
         if ( dist_row.account == get_self() ) continue;
 
+        // ignore dust (0.0000 EOS) no need to create/update table
+        if ( dist_amount.amount <= 0 ) continue;
+
         // add to table
         auto itr = _claimers.find(dist_row.account.value);
         if (itr == _claimers.end()) {
