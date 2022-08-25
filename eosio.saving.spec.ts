@@ -74,8 +74,7 @@ describe('eosio.saving', () => {
   it("config::setdistrib (100%)", async () => {
     const accounts = [{account: "eosio.grants", percent: 10000}];
     await contracts.saving.actions.setdistrib([accounts]).send();
-    const config = getConfig();
-    expect(config.accounts).toStrictEqual(accounts);
+    expect(getConfig().accounts).toStrictEqual(accounts);
   });
 
   it("allocate", async () => {
@@ -91,8 +90,7 @@ describe('eosio.saving', () => {
   it("setdistrib (80/20)", async () => {
     const accounts = [{account: "eosio.grants", percent: 8000}, {account: "eosio.saving", percent: 2000}];
     await contracts.saving.actions.setdistrib([accounts]).send();
-    const config = getConfig();
-    expect(config.accounts).toStrictEqual(accounts);
+    expect(getConfig().accounts).toStrictEqual(accounts);
 
     // transfer
     await contracts.token.EOS.actions.transfer(["eosio", "eosio.saving", "100.0000 EOS", "unallocated inflation"]).send("eosio@active");
@@ -109,11 +107,28 @@ describe('eosio.saving', () => {
     expect(getClaimer("eosio.grants").balance).toBe("0.0008 EOS");
   });
 
+  it("setdistrib (empty)", async () => {
+    await contracts.saving.actions.setdistrib([[]]).send();
+    expect(getConfig().accounts).toStrictEqual([]);
+  });
+
   // ERRORS
   it("error::setdistrib (50)", async () => {
     const accounts = [{account: "eosio.grants", percent: 5000}];
     const action = contracts.saving.actions.setdistrib([accounts]).send();
     await expectToThrow(action, "Total percentage does not equal 100%");
+  });
+
+  it("error::setdistrib (0)", async () => {
+    const accounts = [{account: "eosio.grants", percent: 0}];
+    const action = contracts.saving.actions.setdistrib([accounts]).send();
+    await expectToThrow(action, "Only positive percentages are allowed");
+  });
+
+  it("error::setdistrib (null account)", async () => {
+    const accounts = [{account: "null", percent: 10000}];
+    const action = contracts.saving.actions.setdistrib([accounts]).send();
+    await expectToThrow(action, "Account does not exist");
   });
 
   it("error::setdistrib (25/25/25)", async () => {
