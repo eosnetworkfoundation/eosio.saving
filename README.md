@@ -1,4 +1,4 @@
-# `EOSIO Saving` distribution
+# `EOSIO Saving` distribution [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/facebook/react/blob/main/LICENSE) [![EOSIO Smart Contract](https://github.com/eosnetworkfoundation/eosio.saving/actions/workflows/tests.yml/badge.svg)](https://github.com/eosnetworkfoundation/eosio.saving/actions/workflows/tests.yml)
 
 ## Quickstart
 

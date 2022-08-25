@@ -1,3 +1,6 @@
 .vscode
 *.abi
 *.wasm
+!external/**/*.wasm
+!external/**/*.abi
+node_modules
