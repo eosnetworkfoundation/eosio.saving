@@ -39,7 +39,7 @@ $ blanc++ eosio.saving.cpp -I include
 ## SHA256 Checksum
 
 **CDT**
-- [Blanc++ `v0.12.0`](https://github.com/haderech/blanc/releases/tag/0.12.1)
+- [Blanc++ `v0.12.1`](https://github.com/haderech/blanc/releases/tag/0.12.1)
 - [Antelope CDT `v3.1.0`](https://github.com/AntelopeIO/cdt/releases/tag/v3.1.0)
 
 ```bash
