@@ -1,5 +1,5 @@
-import { Name, Asset, TimePointSec } from "@greymass/eosio";
-import { Blockchain } from "@proton/vert"
+const { Name, Asset, TimePointSec } = require("@greymass/eosio");
+const { Blockchain } = require("@proton/vert");
 
 // Vert EOS VM
 const blockchain = new Blockchain()
@@ -18,27 +18,13 @@ const contracts = {
 // accounts
 const accounts = blockchain.createAccounts('eosio', "eosio.grants", "eosio.other", "eosio.second");
 
-interface Config {
-  accounts: DistributeAccount[];
-}
-
-interface DistributeAccount {
-  account: string;
-  percent: number;
-};
-
-interface Claimers {
-  account: string;
-  balance: string;
-}
-
-const getConfig = (): Config => {
+const getConfig = () => {
   const scope = Name.from('eosio.saving').value.value;
   return contracts.saving.tables.config(scope).getTableRows()[0];
 }
 
-const getBalance = ( account: string, symcode = "EOS" ): number => {
-  const contract = (contracts.token as any)[symcode];
+const getBalance = ( account, symcode = "EOS" ) => {
+  const contract = contracts.token[symcode];
   const scope = Name.from(account).value.value;
   const primaryKey = Asset.SymbolCode.from(symcode).value.value;
   const result = contract.tables.accounts(scope).getTableRow(primaryKey);
@@ -46,7 +32,7 @@ const getBalance = ( account: string, symcode = "EOS" ): number => {
   return 0;
 }
 
-const getClaimer = ( account: string ): Claimers => {
+const getClaimer = ( account ) => {
   const scope = Name.from('eosio.saving').value.value;
   const primary_key = Name.from(account).value.value;
   return contracts.saving.tables.claimers(scope).getTableRow(primary_key)
@@ -169,11 +155,11 @@ describe('eosio.saving', () => {
  * @param promise - The promise to await.
  * @param {string} errorMsg - The error message that we expect to see.
  */
- const expectToThrow = async (promise: Promise<any>, errorMsg?: string) => {
+ const expectToThrow = async (promise, errorMsg) => {
   try {
     await promise
     expect(true).toBeFalsy();
-  } catch (e: any) {
+  } catch (e) {
     if ( errorMsg ) expect(e.message).toMatch(errorMsg)
     else expect(false).toBeFalsy()
   }
