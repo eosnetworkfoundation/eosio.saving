@@ -3,6 +3,18 @@
 [![Antelope CDT](https://github.com/eosnetworkfoundation/eosio.saving/actions/workflows/release.yml/badge.svg)](https://github.com/eosnetworkfoundation/eosio.saving/actions/workflows/release.yml)
 [![Blanc++ Vert](https://github.com/eosnetworkfoundation/eosio.saving/actions/workflows/tests.yml/badge.svg)](https://github.com/eosnetworkfoundation/eosio.saving/actions/workflows/tests.yml)
 
+## Overview
+
+- Programable distribution allocation of EOS received by `eosio.saving` account
+- Block Producer voting rewards & BP rewards takes priority
+- Left EOS over flows into `eosio.saving` account
+- Configurable account to distribute allocation (ex: 80% Account A, 20% Account B)
+
+## Contributors
+
+- Denis Carriere | EOS Nation
+- Areg | ENF
+
 ## Quickstart
 
 1. Setup distribution configurations
@@ -25,7 +37,6 @@ $ cleos push action eosio.saving claim '["eosio.grants"]' -p eosio.grants
 - Handle allocating to self (`eosio.saving`)
 - Handle when not initialized state
 - Handle when distribution accounts are empty
-
 
 ## Build
 
