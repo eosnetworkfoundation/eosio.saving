@@ -8,10 +8,10 @@ const blockchain = new Blockchain()
 const contracts = {
   saving: blockchain.createContract('eosio.saving', 'eosio.saving', true),
   token: {
-    EOS: blockchain.createContract('eosio.token', 'external/eosio.token/eosio.token'),
+    EOS: blockchain.createContract('eosio.token', 'include/eosio.token/eosio.token'),
   },
   fake: {
-    EOS: blockchain.createContract('fake.token', 'external/eosio.token/eosio.token'),
+    EOS: blockchain.createContract('fake.token', 'include/eosio.token/eosio.token'),
   },
 }
 
