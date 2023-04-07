@@ -1,8 +1,6 @@
 #include <eosio.token/eosio.token.hpp>
 #include "eosio.saving.hpp"
 
-namespace eosio {
-
 ACTION saving::setdistrib( const std::vector<distribute_account>& accounts ) {
     require_auth( get_self() );
     config_table _config{ get_self(), get_self().value };
@@ -89,5 +87,3 @@ void saving::on_transfer( const name& from, const name& to, const asset& quantit
         }
     }
 }
-
-} // eosio
