@@ -19,7 +19,7 @@ namespace eosio {
         uint16_t    percent;
     };
 
-    class [[eosio::contract("eosio.saving")]] saving : public eosio::contract {
+    CONTRACT saving : public eosio::contract {
     public:
         using contract::contract;
 
@@ -38,7 +38,7 @@ namespace eosio {
          * }
          * ```
          */
-        struct [[eosio::table("config")]] config_row {
+        TABLE config_row {
             std::vector<distribute_account>     accounts;
         };
         typedef eosio::singleton< "config"_n, config_row > config_table;
@@ -60,7 +60,7 @@ namespace eosio {
          * }
          * ```
          */
-        struct [[eosio::table("claimers")]] claimers_row {
+        TABLE claimers_row {
             name        account;
             asset       balance;
 
@@ -77,8 +77,7 @@ namespace eosio {
          * @post any tokens sent to the contract account will be distributed based on the percentage
          * @post if `accounts` is an empty array no tokens will be distributed
          * */
-        [[eosio::action]]
-        void setdistrib( const std::vector<distribute_account>& accounts );
+        ACTION setdistrib( const std::vector<distribute_account>& accounts );
 
         /**
          * Claim tokens that have been marked for distribution.
@@ -87,8 +86,7 @@ namespace eosio {
          *
          * @post row in `claimers` table will be erased
          * */
-        [[eosio::action]]
-        void claim( const name& claimer );
+        ACTION claim( const name& claimer );
 
         /**
          * Action that will be called when transfer is performed.

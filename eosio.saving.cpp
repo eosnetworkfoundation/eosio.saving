@@ -3,8 +3,7 @@
 
 namespace eosio {
 
-[[eosio::action]]
-void saving::setdistrib( const std::vector<distribute_account>& accounts ) {
+ACTION saving::setdistrib( const std::vector<distribute_account>& accounts ) {
     require_auth( get_self() );
     config_table _config{ get_self(), get_self().value };
     auto config = _config.get_or_default();
@@ -24,8 +23,7 @@ void saving::setdistrib( const std::vector<distribute_account>& accounts ) {
     _config.set( config, get_self() );
 }
 
-[[eosio::action]]
-void saving::claim(const name& claimer) {
+ACTION saving::claim(const name& claimer) {
     require_auth( claimer );
     claimers_table _claimers{ get_self(), get_self().value };
 
