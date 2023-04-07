@@ -36,7 +36,7 @@ public:
      * }
      * ```
      */
-    TABLE config_row {
+    struct [[eosio::table("config")]] config_row {
         std::vector<distribute_account>     accounts;
     };
     typedef eosio::singleton< "config"_n, config_row > config_table;
@@ -58,7 +58,7 @@ public:
      * }
      * ```
      */
-    TABLE claimers_row {
+    struct [[eosio::table("claimers")]] claimers_row {
         name        account;
         asset       balance;
 
@@ -74,8 +74,9 @@ public:
      *
      * @post any tokens sent to the contract account will be distributed based on the percentage
      * @post if `accounts` is an empty array no tokens will be distributed
-     * */
-    ACTION setdistrib( const std::vector<distribute_account>& accounts );
+     */
+    [[eosio::action]]
+    void setdistrib( const std::vector<distribute_account>& accounts );
 
     /**
      * Claim tokens that have been marked for distribution.
@@ -84,7 +85,8 @@ public:
      *
      * @post row in `claimers` table will be erased
      * */
-    ACTION claim( const name& claimer );
+    [[eosio::action]]
+    void claim( const name& claimer );
 
     /**
      * Action that will be called when transfer is performed.

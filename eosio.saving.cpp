@@ -1,7 +1,8 @@
 #include <eosio.token/eosio.token.hpp>
 #include "eosio.saving.hpp"
 
-ACTION saving::setdistrib( const std::vector<distribute_account>& accounts ) {
+[[eosio::action]]
+void saving::setdistrib( const std::vector<distribute_account>& accounts ) {
     require_auth( get_self() );
     config_table _config{ get_self(), get_self().value };
     auto config = _config.get_or_default();
@@ -21,7 +22,8 @@ ACTION saving::setdistrib( const std::vector<distribute_account>& accounts ) {
     _config.set( config, get_self() );
 }
 
-ACTION saving::claim(const name& claimer) {
+[[eosio::action]]
+void saving::claim(const name& claimer) {
     require_auth( claimer );
     claimers_table _claimers{ get_self(), get_self().value };
 
