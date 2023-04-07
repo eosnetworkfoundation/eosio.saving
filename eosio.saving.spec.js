@@ -3,7 +3,6 @@ const { Blockchain } = require("@proton/vert");
 
 // Vert EOS VM
 const blockchain = new Blockchain()
-blockchain.enableStorageDeltas();
 
 // contracts
 const contracts = {
@@ -62,19 +61,16 @@ describe('eosio.saving', () => {
     const accounts = [{account: "eosio.grants", percent: 10000}];
     await contracts.saving.actions.setdistrib([accounts]).send();
     expect(getConfig().accounts).toStrictEqual(accounts);
-    blockchain.printStorageDeltas();
   });
 
   it("allocate", async () => {
     await contracts.token.EOS.actions.transfer(["eosio", "eosio.saving", "100.0000 EOS", "unallocated inflation"]).send("eosio@active");
     expect(getClaimer("eosio.grants").balance).toBe("100.0000 EOS");
-    blockchain.printStorageDeltas();
   });
 
   it("claim", async () => {
     await contracts.saving.actions.claim(["eosio.grants"]).send("eosio.grants@active");
     expect(getBalance("eosio.grants", "EOS")).toBe(1000000);
-    blockchain.printStorageDeltas();
   });
 
   it("setdistrib (50/30/20)", async () => {
